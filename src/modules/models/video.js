@@ -8,6 +8,7 @@ define( function( require )
             'urlRoot': '/ajax/video',
             'defaults': {
                 'video_id': 0,
+                'grupo': '',
                 'titulo': '',
                 'descripcion': ''
             },

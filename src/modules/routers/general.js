@@ -5,17 +5,14 @@ define( function( require, exports )
         GeneralRouter = Backbone.Router.extend({
         'routes': {
             'olvidar': 'forgottenPassword',
-            'conectar': 'login'
+            'conectar': 'login',
+            'registrar': 'registrar'
         },
         'loginView': {},
         initialize: function()
         {
             this.loginView = new LoginView();
             this.loginView.on( 'loginView:hidden', this.goToHome, this );
-        },
-        goToHome: function()
-        {
-            this.navigate( '', {trigger: true} );
         },
         forgottenPassword: function()
         {
@@ -24,6 +21,10 @@ define( function( require, exports )
         login: function()
         {
             this.loginView.showLogin();
+        },
+        registrar: function()
+        {
+            this.loginView.showRegister();
         }
     });
 

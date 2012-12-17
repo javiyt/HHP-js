@@ -4,81 +4,29 @@ define( function( require, exports )
         _ = require( 'underscore' ),
         Backbone = require( 'backbone' ),
         videoModel = require( 'modules/models/video' ),
-        videoTpl = require( 'text!templates/video_viewer.tpl' ),
         videosView = Backbone.View.extend(
         {
-            'el': document.getElementById( 'main_container' ),
+            'el': document.getElementById( 'video_page' ),
             'elements': {
-                'modal': document.getElementById( 'modalVideo' ),
                 'form': document.getElementById( 'modalForm' ),
                 'video_marcado': document.getElementById( 'video_marcado' )
             },
-            'size': {
-                'width': 0,
-                'height': 0
-            },
-            'offset': 30,
             'events': {
-                'click #agregar_video': 'showForm',
-                'click #form_video .step1 a': 'formStep2',
-                'click #form_video .step2 a': 'saveVideo'
+                'click #gotoStep2': 'formStep2',
+                'click #saveVideo': 'saveVideo',
+                'click #marcar_video': 'marcarVideo'
             },
-            'template': _.template( videoTpl ),
-            initialize: function()
-            {
-                this.resizeWindow();
-
-                $( window ).on( 'resize', $.proxy( this.resizeWindow, this ) );
-
-                $( this.elements.modal ).on( 'hidden', $.proxy( this.hideVideo, this ) );
-            },
-            resizeWindow: function()
-            {
-                var outerWidth = $( 'body' ).outerWidth();
-               switch ( true )
-                {
-                    case ( outerWidth <= 480 ):
-                    case ( outerWidth <= 768 ):
-                        this.size = {'width': 420, 'height': 236};
-                        break;
-                    case ( outerWidth <= 980 ):
-                        this.size = {'width': 640, 'height': 360};
-                        break;
-                    case ( outerWidth <= 1200 ):
-                    default:
-                        this.size = {'width': 853, 'height': 480};
-                        this.offset = 45;
-                        break;
-                }
-            },
-            showVideo: function( video_id )
-            {
-                var current = $( 'a[data-rel="' + video_id + '"]', this.$el ),
-                template_data = {
-                    'width':  this.size.width,
-                    'height': this.size.height,
-                    'video_id': current.attr( 'data-rel' ),
-                    'title': current.attr( 'data-title' )
-                };
-
-                $( this.elements.modal ).html( this.template( template_data ) ).width(  ( this.size.width + this.offset ) + 'px' ).modal( 'show' );
-                $( this.elements.video_marcado ).addClass( 'hide' ).removeClass( 'alert-error alert-success' ).find( 'span' ).remove();
-            },
-            hideVideo: function()
-            {
-                $( '.video-container', this.elements.modal ).html( '' );
-                this.trigger( 'video:closed' );
-            },
-            showForm: function( e )
+            showForm: function()
             {
                 this.hideErrorMessage();
                 this.hideSearchMessage();
                 $( '.step1', this.elements.form ).removeClass( 'hide' );
                 $( '.step2', this.elements.form ).addClass( 'hide' );
                 $( 'input', this.elements.form ).val( '' );
-                $( this.elements.form ).modal( 'show' );
-
-                e.preventDefault();
+                $( this.elements.form ).modal( 'show' ).on( 'hidden', $.proxy( function()
+                {
+                    this.trigger( 'modal:hide' );
+                }, this ) );
             },
             closeForm: function()
             {
@@ -152,18 +100,22 @@ define( function( require, exports )
 
                 return ( match && match[7].length == 11 )  ? match[7] : false;
             },
-            marcarVideo: function( video_id )
+            marcarVideo: function( e )
             {
+                var video_id = e.currentTarget.getAttribute( 'data-video' );
+
+                e.preventDefault();
+
                 this.model = new videoModel( {id: video_id, inadecuado: 1} );
 
                 this.model.on( 'sync', this.videoMarcado, this );
 
-                $( '.loading', this.elements.modal ).removeClass( 'hide' );
+                this.$el.find( '.loading' ).removeClass( 'hide' );
                 this.model.save();
             },
             videoMarcado: function( model )
             {
-                $( this.elements.modal ).modal( 'hide' );
+                this.$el.find( '.loading' ).addClass( 'hide' );
 
                 if ( model.get( 'result' ) )
                 {
@@ -173,6 +125,8 @@ define( function( require, exports )
                 {
                     $( this.elements.video_marcado ).addClass( 'alert-error' ).append( '<span>Hubo un error marcando el video</span>' ).removeClass( 'hide' );
                 }
+
+                window.scrollTo( 0, 0 );
             }
         } );
 

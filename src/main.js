@@ -1,13 +1,19 @@
 requirejs.config({
     baseUrl: '/js',
     paths: {
-        'jquery': 'https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min',
+        'jquery': '/js/libs/jquery-1.8.3.min',
         'bootstrap': '/js/libs/bootstrap.min',
+        'backbone-orig': '/js/libs/backbone',
+        'backbone-lib': '/js/libs/backbone.debug',
+        'backbone': '/js/libs/backbone.hhp',
+        'underscore': '/js/libs/underscore',
+        'text': '/js/libs/text.requirejs',
+        'nicedit': '/js/libs/nicEdit',
         'player': '/js/jquery/jquery.jplayer.min',
         'playlist': '/js/jquery/jplayer.playlist.min',
-        'backbone': '/js/libs/backbone',
-        'underscore': '/js/libs/underscore',
-        'text': '/js/libs/text.requirejs'
+        'jquery.ui.widget': '/js/jquery/jquery.ui.widget',
+        'jquery.iframe': '/js/jquery/jquery.iframe-transport',
+        'fileupload': '/js/jquery/jquery.fileupload'
     },
     shim: {
         'jquery': {
@@ -27,9 +33,29 @@ requirejs.config({
         'underscore': {
             'exports': '_'
         },
-        'backbone': {
+        'backbone-orig': {
             'deps': ['underscore', 'jquery'],
             'exports': 'Backbone'
+        },
+        'backbone-lib': {
+            'deps': ['backbone-orig'],
+            'exports': 'Backbone'
+        },
+        'backbone': {
+            'deps': ['backbone-orig'],
+            'exports': 'Backbone'
+        },
+        'nicedit': {
+            'exports': 'nicEditor'
+        },
+        'jquery.ui.widget': {
+            'deps': ['jquery']
+        },
+        'jquery.iframe': {
+            'deps': ['jquery', 'jquery.ui.widget']
+        },
+        'fileupload': {
+            'deps': ['jquery', 'jquery.ui.widget', 'jquery.iframe']
         }
     }
 });

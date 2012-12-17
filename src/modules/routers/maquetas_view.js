@@ -2,7 +2,6 @@ define( function( require, exports )
 {
     var jPlayerPlaylist = require( 'playlist' );
 
-
     exports.start = function()
     {
         var myPlaylist = new jPlayerPlaylist({
